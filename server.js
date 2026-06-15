@@ -21,6 +21,7 @@ const pool = new Pool({
 });
 
 const JWT_SECRET = 'your-secret-key-change-in-production';
+const activeUsers = new Map();
 
 const initDB = async () => {
   await pool.query(`
@@ -48,6 +49,7 @@ app.post('/api/register', async (req, res) => {
     const token = jwt.sign({ id: result.rows[0].id }, JWT_SECRET);
     res.json({ token, user: result.rows[0] });
   } catch (err) {
+    console.error('Register error:', err);
     res.status(400).json({ error: 'Username already exists' });
   }
 });
@@ -67,13 +69,19 @@ app.post('/api/login', async (req, res) => {
     const token = jwt.sign({ id: user.id }, JWT_SECRET);
     res.json({ token, user: { id: user.id, username: user.username, coins: user.coins, jump_power: user.jump_power } });
   } catch (err) {
+    console.error('Login error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
 app.get('/api/leaderboard', async (req, res) => {
-  const result = await pool.query('SELECT id, username, coins, jump_power FROM users ORDER BY coins DESC LIMIT 10');
-  res.json(result.rows);
+  try {
+    const result = await pool.query('SELECT id, username, coins, jump_power FROM users ORDER BY coins DESC LIMIT 10');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Leaderboard error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 const players = new Map();
@@ -90,19 +98,31 @@ const sendCrownUpdate = async () => {
 
 io.on('connection', (socket) => {
   let currentUser = null;
+  let userId = null;
 
   socket.on('authenticate', async (token) => {
     try {
       const decoded = jwt.verify(token, JWT_SECRET);
-      const result = await pool.query('SELECT * FROM users WHERE id = $1', [decoded.id]);
+      userId = decoded.id;
+      
+      if (activeUsers.has(userId)) {
+        const oldSocketId = activeUsers.get(userId);
+        if (io.sockets.sockets.has(oldSocketId)) {
+          io.sockets.sockets.get(oldSocketId).disconnect(true);
+        }
+        players.delete(oldSocketId);
+      }
+      
+      const result = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
       if (result.rows.length > 0) {
         currentUser = result.rows[0];
+        activeUsers.set(userId, socket.id);
         const topPlayerId = await getTopPlayer();
         players.set(socket.id, {
           id: socket.id,
           user: currentUser,
           x: 0,
-          y: 5,
+          y: 2,
           z: 0,
           velY: 0,
           isJumping: false,
@@ -130,7 +150,6 @@ io.on('connection', (socket) => {
 
   socket.on('jumpLand', async (jumpHeight) => {
     if (!currentUser) return;
-    // Награда за прыжок: больше высоты = больше монет
     const coinsReward = Math.floor(jumpHeight * 5);
     if (coinsReward > 0) {
       await pool.query('UPDATE users SET coins = coins + $1 WHERE id = $2', [coinsReward, currentUser.id]);
@@ -154,12 +173,15 @@ io.on('connection', (socket) => {
       socket.emit('upgradeSuccess', currentUser);
       io.emit('playerUpdated', players.get(socket.id));
     } else {
-      socket.emit('upgradeFail', 'Not enough coins');
+      socket.emit('upgradeFail', 'Не хватает монет! Нужно: ' + cost + ', у вас: ' + currentUser.coins);
     }
   });
 
   socket.on('disconnect', () => {
     if (socket.id) {
+      if (userId) {
+        activeUsers.delete(userId);
+      }
       players.delete(socket.id);
       socket.broadcast.emit('playerLeft', socket.id);
     }
@@ -167,4 +189,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, () => console.log('Server running on port ' + PORT));
