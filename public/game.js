@@ -18,6 +18,11 @@ const leaderboardList = document.getElementById('leaderboardList');
 const errorPopup = document.getElementById('errorPopup');
 const errorText = document.getElementById('errorText');
 const closeErrorBtn = document.getElementById('closeErrorBtn');
+const chatDiv = document.getElementById('chat');
+const chatToggle = document.getElementById('chatToggle');
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const chatSend = document.getElementById('chatSend');
 
 document.getElementById('registerBtn').onclick = async () => {
     const username = document.getElementById('username').value;
@@ -59,6 +64,37 @@ closeErrorBtn.onclick = () => {
     errorPopup.style.display = 'none';
 };
 
+chatToggle.onclick = () => {
+    if (chatDiv.style.display === 'none') {
+        chatDiv.style.display = 'flex';
+    } else {
+        chatDiv.style.display = 'none';
+    }
+};
+
+chatSend.onclick = sendChatMessage;
+
+chatInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        sendChatMessage();
+    }
+});
+
+function sendChatMessage() {
+    const message = chatInput.value.trim();
+    if (message && currentUser) {
+        socket.emit('chatMessage', message);
+        chatInput.value = '';
+    }
+}
+
+function addChatMessage(username, message) {
+    const div = document.createElement('div');
+    div.innerHTML = `<span class="username">${username}:</span> ${message}`;
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
 function showError(message) {
     errorText.textContent = message;
     errorPopup.style.display = 'block';
@@ -69,6 +105,7 @@ function startGame() {
     gameUIDiv.style.display = 'block';
     leaderboardDiv.style.display = 'block';
     upgradeBtn.style.display = 'block';
+    chatToggle.style.display = 'block';
     initThree();
     socket.emit('authenticate', token);
     updateUI();
@@ -268,6 +305,10 @@ socket.on('crownUpdate', (topUserId) => {
         const isFirst = player.data.user && player.data.user.id === topUserId;
         updatePlayerCrown(player, isFirst);
     });
+});
+
+socket.on('chatMessage', (data) => {
+    addChatMessage(data.username, data.message);
 });
 
 function showCoinsPopup(coins) {

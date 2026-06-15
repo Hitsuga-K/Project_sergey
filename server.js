@@ -177,6 +177,15 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('chatMessage', (message) => {
+    if (currentUser) {
+      io.emit('chatMessage', {
+        username: currentUser.username,
+        message: message
+      });
+    }
+  });
+
   socket.on('disconnect', () => {
     if (socket.id) {
       if (userId) {
