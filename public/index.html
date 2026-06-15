@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Neon Jump</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            overflow: hidden; 
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+        }
+        #ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        #auth, #gameUI, #leaderboard, #upgradeBtn { pointer-events: auto; }
+        
+        #auth {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(10, 10, 10, 0.95);
+            padding: 40px;
+            border: 3px solid #00ffff;
+            box-shadow: 0 0 30px #00ffff, inset 0 0 30px rgba(0, 255, 255, 0.1);
+        }
+        
+        #auth h2 {
+            color: #00ffff;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px #00ffff;
+            font-size: 32px;
+        }
+        
+        #auth input {
+            display: block;
+            width: 100%;
+            margin: 15px 0;
+            padding: 15px;
+            font-size: 16px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #ff00ff;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+        }
+        
+        #auth input::placeholder {
+            color: #888;
+        }
+        
+        #auth input:focus {
+            outline: none;
+            box-shadow: 0 0 15px #ff00ff;
+        }
+        
+        #auth button {
+            display: block;
+            width: 100%;
+            margin: 15px 0;
+            padding: 15px;
+            font-size: 16px;
+            background: transparent;
+            border: 2px solid;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        #registerBtn {
+            color: #00ffff;
+            border-color: #00ffff;
+        }
+        
+        #registerBtn:hover {
+            background: #00ffff;
+            color: #0a0a0a;
+            box-shadow: 0 0 20px #00ffff;
+        }
+        
+        #loginBtn {
+            color: #ff00ff;
+            border-color: #ff00ff;
+        }
+        
+        #loginBtn:hover {
+            background: #ff00ff;
+            color: #0a0a0a;
+            box-shadow: 0 0 20px #ff00ff;
+        }
+        
+        #gameUI {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+            font-size: 20px;
+        }
+        
+        #gameUI div {
+            margin: 10px 0;
+            padding: 10px;
+            border: 2px solid #00ffff;
+            background: rgba(0, 0, 0, 0.7);
+        }
+        
+        #leaderboard {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(10, 10, 10, 0.9);
+            border: 3px solid #ff00ff;
+            color: #fff;
+            padding: 20px;
+            min-width: 220px;
+            box-shadow: 0 0 20px #ff00ff;
+        }
+        
+        #leaderboard h3 {
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        #leaderboard div {
+            margin: 10px 0;
+            padding: 8px;
+            border-bottom: 1px solid rgba(255, 0, 255, 0.3);
+        }
+        
+        #upgradeBtn {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 20px 50px;
+            font-size: 20px;
+            background: transparent;
+            border: 3px solid #ffff00;
+            color: #ffff00;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            text-shadow: 0 0 10px #ffff00;
+            box-shadow: 0 0 20px rgba(255, 255, 0, 0.3);
+            transition: all 0.3s;
+        }
+        
+        #upgradeBtn:hover {
+            background: #ffff00;
+            color: #0a0a0a;
+            box-shadow: 0 0 40px #ffff00;
+        }
+        
+        #errorPopup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(10, 10, 10, 0.98);
+            border: 3px solid #ff4444;
+            padding: 30px 50px;
+            color: #ff4444;
+            font-family: 'Courier New', monospace;
+            font-size: 20px;
+            text-shadow: 0 0 10px #ff4444;
+            box-shadow: 0 0 30px #ff4444;
+            z-index: 2000;
+            display: none;
+        }
+        
+        #errorPopup button {
+            display: block;
+            margin: 20px auto 0;
+            padding: 10px 30px;
+            background: transparent;
+            border: 2px solid #ff4444;
+            color: #ff4444;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        #errorPopup button:hover {
+            background: #ff4444;
+            color: #0a0a0a;
+            box-shadow: 0 0 20px #ff4444;
+        }
+    </style>
+</head>
+<body>
+    <div id="ui">
+        <div id="auth">
+            <h2>NEON JUMP</h2>
+            <input type="text" id="username" placeholder="USERNAME">
+            <input type="password" id="password" placeholder="PASSWORD">
+            <button id="registerBtn">REGISTER</button>
+            <button id="loginBtn">LOGIN</button>
+        </div>
+        <div id="gameUI" style="display: none;">
+            <div id="coins">COINS: 0</div>
+            <div id="jumpPower">JUMP POWER: 10</div>
+        </div>
+        <div id="leaderboard" style="display: none;">
+            <h3>LEADERBOARD</h3>
+            <div id="leaderboardList"></div>
+        </div>
+        <button id="upgradeBtn" style="display: none;">UPGRADE JUMP (COST: 100)</button>
+    </div>
+    <div id="errorPopup">
+        <div id="errorText"></div>
+        <button id="closeErrorBtn">OK</button>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
