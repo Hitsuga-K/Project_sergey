@@ -364,10 +364,10 @@ body {
 }
 
 /* Показываем контролы только на мобильных, если нет класса .hidden */
-@media (max-width: 768px) {
-    #jumpBtn:not(.hidden),
-    #joystickContainer:not(.hidden) {
-        display: block;
+@media (min-width: 769px) {
+    #jumpBtn,
+    #joystickContainer {
+        display: none !important;
     }
 }
 
