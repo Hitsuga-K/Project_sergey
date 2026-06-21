@@ -35,6 +35,11 @@ body {
     left: 20px;
     user-select: none;
     touch-action: none;
+    display: block;
+}
+
+#jumpBtn {
+    display: block;
 }
 
 #joystickBase {
@@ -352,6 +357,28 @@ body {
     display: none !important;
 }
 
+/* По умолчанию скрываем контролы */
+#jumpBtn,
+#joystickContainer {
+    display: none;
+}
+
+/* Показываем контролы только на мобильных, если нет класса .hidden */
+@media (max-width: 768px) {
+    #jumpBtn:not(.hidden),
+    #joystickContainer:not(.hidden) {
+        display: block;
+    }
+}
+
+/* На десктопах скрываем всегда */
+@media (min-width: 769px) {
+    #jumpBtn,
+    #joystickContainer {
+        display: none !important;
+    }
+}
+
 #jumpBtn:active {
     background: rgba(0, 255, 0, 0.2);
     transform: scale(0.95);
@@ -410,16 +437,11 @@ body {
     }
     
     #jumpBtn {
-        display: block;
         width: 80px;
         height: 80px;
         font-size: 16px;
         bottom: 20px;
         right: 20px;
-    }
-    
-    #joystickContainer {
-        display: block;
     }
     
     #joystickBase {
@@ -430,13 +452,6 @@ body {
     #joystickKnob {
         width: 40px;
         height: 40px;
-    }
-}
-
-@media (min-width: 769px) {
-    #jumpBtn,
-    #joystickContainer {
-        display: none !important;
     }
 }
 
