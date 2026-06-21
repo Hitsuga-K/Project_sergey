@@ -35,7 +35,6 @@ socket.on('coinsEarned', (data) => {
     currentUser = data.user;
     myPlayer.data.user = currentUser;
     updateUI();
-    loadLeaderboard();
     showCoinsPopup(data.coinsReward);
 });
 
@@ -43,7 +42,6 @@ socket.on('upgradeSuccess', (user) => {
     currentUser = user;
     myPlayer.data.user = currentUser;
     updateUI();
-    loadLeaderboard();
 });
 
 socket.on('upgradeFail', (msg) => {
@@ -66,4 +64,8 @@ socket.on('crownUpdate', (topUserId) => {
 
 socket.on('chatMessage', (data) => {
     addChatMessage(data.username, data.message);
+});
+
+socket.on('leaderboardUpdate', (leaderboard) => {
+    renderLeaderboard(leaderboard);
 });

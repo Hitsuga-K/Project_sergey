@@ -13,9 +13,19 @@ const initSocketHandler = (io, secret) => {
         return result.rows.length > 0 ? result.rows[0].id : null;
     };
 
+    const getLeaderboard = async () => {
+        const result = await pool.query('SELECT id, username, coins, jump_power FROM users ORDER BY coins DESC LIMIT 10');
+        return result.rows;
+    };
+
     const sendCrownUpdate = async () => {
         const topPlayerId = await getTopPlayer();
         io.emit('crownUpdate', topPlayerId);
+    };
+
+    const sendLeaderboardUpdate = async () => {
+        const leaderboard = await getLeaderboard();
+        io.emit('leaderboardUpdate', leaderboard);
     };
 
     io.on('connection', (socket) => {
@@ -79,6 +89,7 @@ const initSocketHandler = (io, secret) => {
                 currentUser = result.rows[0];
                 players.get(socket.id).user = currentUser;
                 await sendCrownUpdate();
+                await sendLeaderboardUpdate();
                 socket.emit('coinsEarned', { coinsReward, user: currentUser });
             }
         });
@@ -92,6 +103,7 @@ const initSocketHandler = (io, secret) => {
                 currentUser = result.rows[0];
                 players.get(socket.id).user = currentUser;
                 await sendCrownUpdate();
+                await sendLeaderboardUpdate();
                 socket.emit('upgradeSuccess', currentUser);
                 io.emit('playerUpdated', players.get(socket.id));
             } else {
