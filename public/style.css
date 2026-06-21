@@ -25,49 +25,43 @@ body {
 #upgradeBtn,
 #chatToggle,
 #jumpBtn,
-#mobileControls {
+#joystickContainer {
     pointer-events: auto;
 }
 
-#mobileControls {
+#joystickContainer {
     position: absolute;
     bottom: 20px;
     left: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
     user-select: none;
-    touch-action: manipulation;
+    touch-action: none;
 }
 
-.controlRow {
-    display: flex;
-    gap: 10px;
-}
-
-.controlBtn {
-    width: 60px;
-    height: 60px;
+#joystickBase {
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
-    background: rgba(0, 255, 255, 0.1);
-    border: 3px solid #00ffff;
-    color: #00ffff;
-    font-size: 24px;
-    font-family: 'Courier New', monospace;
-    font-weight: bold;
-    cursor: pointer;
-    text-shadow: 0 0 10px #00ffff;
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-    transition: all 0.15s;
+    background: rgba(0, 255, 255, 0.15);
+    border: 4px solid #00ffff;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
 }
 
-.controlBtn:active {
-    background: rgba(0, 255, 255, 0.3);
-    transform: scale(0.9);
-    box-shadow: 0 0 35px rgba(0, 255, 255, 0.6);
+#joystickKnob {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(0, 255, 255, 0.4);
+    border: 3px solid #00ffff;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: background 0.1s, transform 0.1s;
 }
 
 #auth {
@@ -350,9 +344,12 @@ body {
     text-shadow: 0 0 15px #00ff00;
     box-shadow: 0 0 30px rgba(0, 255, 0, 0.4);
     transition: all 0.2s;
-    display: none;
     user-select: none;
     touch-action: manipulation;
+}
+
+.hidden {
+    display: none !important;
 }
 
 #jumpBtn:active {
@@ -421,20 +418,24 @@ body {
         right: 20px;
     }
     
-    #mobileControls {
-        display: flex;
+    #joystickContainer {
+        display: block;
     }
     
-    .controlBtn {
-        width: 50px;
-        height: 50px;
-        font-size: 20px;
+    #joystickBase {
+        width: 100px;
+        height: 100px;
+    }
+    
+    #joystickKnob {
+        width: 40px;
+        height: 40px;
     }
 }
 
 @media (min-width: 769px) {
     #jumpBtn,
-    #mobileControls {
+    #joystickContainer {
         display: none !important;
     }
 }

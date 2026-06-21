@@ -14,11 +14,9 @@ const chatMessages = document.getElementById('chatMessages');
 const chatInput = document.getElementById('chatInput');
 const chatSend = document.getElementById('chatSend');
 const jumpBtn = document.getElementById('jumpBtn');
-const wBtn = document.getElementById('wBtn');
-const aBtn = document.getElementById('aBtn');
-const sBtn = document.getElementById('sBtn');
-const dBtn = document.getElementById('dBtn');
-const mobileControls = document.getElementById('mobileControls');
+const joystickContainer = document.getElementById('joystickContainer');
+const joystickBase = document.getElementById('joystickBase');
+const joystickKnob = document.getElementById('joystickKnob');
 
 function updateUI() {
     coinsDiv.textContent = `Coins: ${currentUser.coins}`;
@@ -129,90 +127,96 @@ jumpBtn.addEventListener('mouseleave', (e) => {
     setKeyState(' ', false);
 });
 
-// Кнопка W
-wBtn.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    setKeyState('w', true);
-});
-wBtn.addEventListener('touchend', (e) => {
-    e.preventDefault();
-    setKeyState('w', false);
-});
-wBtn.addEventListener('mousedown', (e) => {
-    e.preventDefault();
-    setKeyState('w', true);
-});
-wBtn.addEventListener('mouseup', (e) => {
-    e.preventDefault();
-    setKeyState('w', false);
-});
-wBtn.addEventListener('mouseleave', (e) => {
-    e.preventDefault();
-    setKeyState('w', false);
-});
+// Джойстик
+let joystickActive = false;
+let joystickId = null;
+let joystickCenter = { x: 0, y: 0 };
+const joystickMaxDistance = 40;
 
-// Кнопка A
-aBtn.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    setKeyState('a', true);
-});
-aBtn.addEventListener('touchend', (e) => {
-    e.preventDefault();
-    setKeyState('a', false);
-});
-aBtn.addEventListener('mousedown', (e) => {
-    e.preventDefault();
-    setKeyState('a', true);
-});
-aBtn.addEventListener('mouseup', (e) => {
-    e.preventDefault();
-    setKeyState('a', false);
-});
-aBtn.addEventListener('mouseleave', (e) => {
-    e.preventDefault();
-    setKeyState('a', false);
-});
+const resetJoystick = () => {
+    joystickKnob.style.transform = 'translate(-50%, -50%)';
+    keys['w'] = false;
+    keys['a'] = false;
+    keys['s'] = false;
+    keys['d'] = false;
+};
 
-// Кнопка S
-sBtn.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    setKeyState('s', true);
-});
-sBtn.addEventListener('touchend', (e) => {
-    e.preventDefault();
-    setKeyState('s', false);
-});
-sBtn.addEventListener('mousedown', (e) => {
-    e.preventDefault();
-    setKeyState('s', true);
-});
-sBtn.addEventListener('mouseup', (e) => {
-    e.preventDefault();
-    setKeyState('s', false);
-});
-sBtn.addEventListener('mouseleave', (e) => {
-    e.preventDefault();
-    setKeyState('s', false);
-});
+const updateJoystick = (clientX, clientY) => {
+    const rect = joystickBase.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    let deltaX = clientX - centerX;
+    let deltaY = clientY - centerY;
+    
+    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    const angle = Math.atan2(deltaY, deltaX);
+    
+    const clampedDistance = Math.min(distance, joystickMaxDistance);
+    const knobX = Math.cos(angle) * clampedDistance;
+    const knobY = Math.sin(angle) * clampedDistance;
+    
+    joystickKnob.style.transform = `translate(calc(-50% + ${knobX}px), calc(-50% + ${knobY}px))`;
+    
+    // Обновляем состояние клавиш
+    const threshold = 15;
+    keys['w'] = deltaY < -threshold;
+    keys['s'] = deltaY > threshold;
+    keys['a'] = deltaX < -threshold;
+    keys['d'] = deltaX > threshold;
+};
 
-// Кнопка D
-dBtn.addEventListener('touchstart', (e) => {
+const handleJoystickStart = (e) => {
     e.preventDefault();
-    setKeyState('d', true);
-});
-dBtn.addEventListener('touchend', (e) => {
+    joystickActive = true;
+    const touch = e.touches ? e.touches[0] : e;
+    joystickId = e.touches ? e.touches[0].identifier : null;
+    updateJoystick(touch.clientX, touch.clientY);
+};
+
+const handleJoystickMove = (e) => {
+    if (!joystickActive) return;
     e.preventDefault();
-    setKeyState('d', false);
-});
-dBtn.addEventListener('mousedown', (e) => {
-    e.preventDefault();
-    setKeyState('d', true);
-});
-dBtn.addEventListener('mouseup', (e) => {
-    e.preventDefault();
-    setKeyState('d', false);
-});
-dBtn.addEventListener('mouseleave', (e) => {
-    e.preventDefault();
-    setKeyState('d', false);
-});
+    
+    let touch;
+    if (e.touches) {
+        for (let t of e.touches) {
+            if (t.identifier === joystickId) {
+                touch = t;
+                break;
+            }
+        }
+    } else {
+        touch = e;
+    }
+    
+    if (touch) {
+        updateJoystick(touch.clientX, touch.clientY);
+    }
+};
+
+const handleJoystickEnd = (e) => {
+    if (e.touches) {
+        let stillActive = false;
+        for (let t of e.touches) {
+            if (t.identifier === joystickId) {
+                stillActive = true;
+                break;
+            }
+        }
+        if (stillActive) return;
+    }
+    joystickActive = false;
+    joystickId = null;
+    resetJoystick();
+};
+
+// События джойстика
+joystickBase.addEventListener('touchstart', handleJoystickStart);
+joystickBase.addEventListener('touchmove', handleJoystickMove);
+joystickBase.addEventListener('touchend', handleJoystickEnd);
+joystickBase.addEventListener('touchcancel', handleJoystickEnd);
+
+joystickBase.addEventListener('mousedown', handleJoystickStart);
+document.addEventListener('mousemove', handleJoystickMove);
+document.addEventListener('mouseup', handleJoystickEnd);
