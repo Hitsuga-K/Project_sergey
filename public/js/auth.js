@@ -36,6 +36,8 @@ function startGame() {
     leaderboardDiv.style.display = 'block';
     upgradeBtn.style.display = 'block';
     chatToggle.style.display = 'block';
+    jumpBtn.style.display = '';
+    mobileControls.style.display = '';
     initThree();
     socket.emit('authenticate', token);
     updateUI();

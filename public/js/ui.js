@@ -13,6 +13,12 @@ const chatToggle = document.getElementById('chatToggle');
 const chatMessages = document.getElementById('chatMessages');
 const chatInput = document.getElementById('chatInput');
 const chatSend = document.getElementById('chatSend');
+const jumpBtn = document.getElementById('jumpBtn');
+const wBtn = document.getElementById('wBtn');
+const aBtn = document.getElementById('aBtn');
+const sBtn = document.getElementById('sBtn');
+const dBtn = document.getElementById('dBtn');
+const mobileControls = document.getElementById('mobileControls');
 
 function updateUI() {
     coinsDiv.textContent = `Coins: ${currentUser.coins}`;
@@ -95,3 +101,118 @@ chatInput.addEventListener('keypress', (e) => {
 upgradeBtn.onclick = () => {
     socket.emit('upgradeJump');
 };
+
+// Обработчики мобильных контроллов
+const setKeyState = (key, isPressed) => {
+    keys[key] = isPressed;
+};
+
+// Кнопка прыжка
+jumpBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    setKeyState(' ', true);
+});
+jumpBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    setKeyState(' ', false);
+});
+jumpBtn.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    setKeyState(' ', true);
+});
+jumpBtn.addEventListener('mouseup', (e) => {
+    e.preventDefault();
+    setKeyState(' ', false);
+});
+jumpBtn.addEventListener('mouseleave', (e) => {
+    e.preventDefault();
+    setKeyState(' ', false);
+});
+
+// Кнопка W
+wBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    setKeyState('w', true);
+});
+wBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    setKeyState('w', false);
+});
+wBtn.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    setKeyState('w', true);
+});
+wBtn.addEventListener('mouseup', (e) => {
+    e.preventDefault();
+    setKeyState('w', false);
+});
+wBtn.addEventListener('mouseleave', (e) => {
+    e.preventDefault();
+    setKeyState('w', false);
+});
+
+// Кнопка A
+aBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    setKeyState('a', true);
+});
+aBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    setKeyState('a', false);
+});
+aBtn.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    setKeyState('a', true);
+});
+aBtn.addEventListener('mouseup', (e) => {
+    e.preventDefault();
+    setKeyState('a', false);
+});
+aBtn.addEventListener('mouseleave', (e) => {
+    e.preventDefault();
+    setKeyState('a', false);
+});
+
+// Кнопка S
+sBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    setKeyState('s', true);
+});
+sBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    setKeyState('s', false);
+});
+sBtn.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    setKeyState('s', true);
+});
+sBtn.addEventListener('mouseup', (e) => {
+    e.preventDefault();
+    setKeyState('s', false);
+});
+sBtn.addEventListener('mouseleave', (e) => {
+    e.preventDefault();
+    setKeyState('s', false);
+});
+
+// Кнопка D
+dBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    setKeyState('d', true);
+});
+dBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    setKeyState('d', false);
+});
+dBtn.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    setKeyState('d', true);
+});
+dBtn.addEventListener('mouseup', (e) => {
+    e.preventDefault();
+    setKeyState('d', false);
+});
+dBtn.addEventListener('mouseleave', (e) => {
+    e.preventDefault();
+    setKeyState('d', false);
+});
