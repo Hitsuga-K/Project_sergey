@@ -36,8 +36,21 @@ function startGame() {
     leaderboardDiv.style.display = 'block';
     upgradeBtn.style.display = 'block';
     chatToggle.style.display = 'block';
-    jumpBtn.classList.remove('hidden');
-    joystickContainer.classList.remove('hidden');
+    
+    // Надёжно определяем мобильное устройство
+    const isMobile = 'ontouchstart' in window || 
+                     navigator.maxTouchPoints > 0 || 
+                     window.innerWidth <= 768;
+    
+    // Показываем контролы только на мобильных устройствах
+    if (isMobile) {
+        jumpBtn.classList.remove('hidden');
+        joystickContainer.classList.remove('hidden');
+    } else {
+        jumpBtn.classList.add('hidden');
+        joystickContainer.classList.add('hidden');
+    }
+    
     initThree();
     socket.emit('authenticate', token);
     updateUI();

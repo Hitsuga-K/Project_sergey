@@ -357,28 +357,6 @@ body {
     display: none !important;
 }
 
-/* По умолчанию скрываем контролы */
-#jumpBtn,
-#joystickContainer {
-    display: none;
-}
-
-/* Показываем контролы только на мобильных, если нет класса .hidden */
-@media (min-width: 769px) {
-    #jumpBtn,
-    #joystickContainer {
-        display: none !important;
-    }
-}
-
-/* На десктопах скрываем всегда */
-@media (min-width: 769px) {
-    #jumpBtn,
-    #joystickContainer {
-        display: none !important;
-    }
-}
-
 #jumpBtn:active {
     background: rgba(0, 255, 0, 0.2);
     transform: scale(0.95);
