@@ -1,4 +1,3 @@
-## public/js/README.md
 
 ```markdown
 # 📁 js - Клиентские скрипты
