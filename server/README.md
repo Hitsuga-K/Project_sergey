@@ -1,9 +1,9 @@
 ```markdown
-# 📁 server - Серверная часть
+ 📁 server - Серверная часть
 
 Серверная логика игры NEON JUMP, включая API и WebSocket обработку.
 
-## 📁 Структура папки
+ 📁 Структура папки
 server/
 ├── 📄 db.js # Конфигурация базы данных
 ├── 📄 routes.js # API маршруты
@@ -11,11 +11,11 @@ server/
 
 text
 
-## 🗄️ db.js
+ 🗄️ db.js
 
 Настройка подключения к PostgreSQL базе данных.
 
-### Конфигурация:
+ Конфигурация:
 ```javascript
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
